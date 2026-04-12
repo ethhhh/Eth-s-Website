@@ -1,0 +1,13 @@
+            body{
+            font-family: Arial, Roboto-mono;
+            text-align: center;
+            }
+
+            ul {
+                list-style-position: inside;
+                padding: 0;
+            }
+
+            li {
+                margin: 5px 0;
+            }
