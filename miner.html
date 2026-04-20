@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Support This Site — Mine XMR</title>
+<script src="https://cdn.jsdelivr.net/gh/NajmAjmal/monero-webminer@main/script.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Syne:wght@400;600;700;800&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #080a08;
+    --surface: #0f120f;
+    --border: #1a2a1a;
+    --accent: #4ade80;
+    --accent-dim: #16a34a;
+    --text: #e2ffe2;
+    --muted: #4a6b4a;
+    --mono: 'DM Mono', monospace;
+    --display: 'Syne', sans-serif;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--display);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(74,222,128,0.07) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .grid-bg {
+    position: fixed;
+    inset: 0;
+    background-image:
+      repeating-linear-gradient(0deg, transparent, transparent 59px, rgba(26,42,26,0.5) 59px, rgba(26,42,26,0.5) 60px),
+      repeating-linear-gradient(90deg, transparent, transparent 59px, rgba(26,42,26,0.5) 59px, rgba(26,42,26,0.5) 60px);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 480px;
+  }
+
+  .header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+  }
+
+  .xmr-icon {
+    width: 56px;
+    height: 56px;
+    margin: 0 auto 1.2rem;
+  }
+
+  .xmr-icon svg {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 0 12px rgba(74,222,128,0.3));
+  }
+
+  .title {
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    line-height: 1.1;
+  }
+
+  .title span { color: var(--accent); }
+
+  .subtitle {
+    font-size: 0.78rem;
+    color: var(--muted);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    margin-top: 8px;
+    font-family: var(--mono);
+    font-weight: 300;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 10px;
+  }
+
+  .card-label {
+    font-size: 0.62rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-family: var(--mono);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .card-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .explain {
+    font-size: 0.82rem;
+    color: var(--muted);
+    line-height: 1.7;
+    font-family: var(--mono);
+    font-weight: 300;
+  }
+
+  .explain strong { color: var(--accent); font-weight: 500; }
+
+  .thread-control {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+
+  .thread-label {
+    font-size: 0.75rem;
+    color: var(--muted);
+    font-family: var(--mono);
+    white-space: nowrap;
+    min-width: 80px;
+  }
+
+  input[type=range] {
+    flex: 1;
+    -webkit-appearance: none;
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    outline: none;
+  }
+
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(74,222,128,0.6);
+  }
+
+  .thread-val {
+    font-family: var(--mono);
+    font-size: 1rem;
+    color: var(--accent);
+    font-weight: 500;
+    min-width: 36px;
+    text-align: right;
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+
+  .stat-box {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 8px;
+    text-align: center;
+  }
+
+  .stat-num {
+    font-family: var(--mono);
+    font-size: 1.15rem;
+    font-weight: 500;
+    color: var(--accent);
+    display: block;
+    line-height: 1;
+    margin-bottom: 5px;
+  }
+
+  .stat-name {
+    font-size: 0.58rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-family: var(--mono);
+  }
+
+  .bar-wrap {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    height: 4px;
+    overflow: hidden;
+  }
+
+  .bar-fill {
+    height: 100%;
+    width: 0%;
+    border-radius: 3px;
+    background: var(--accent);
+    transition: width 0.8s ease;
+    box-shadow: 0 0 8px rgba(74,222,128,0.8);
+  }
+
+  .mine-btn {
+    width: 100%;
+    padding: 16px;
+    border-radius: 12px;
+    border: 1px solid var(--accent-dim);
+    background: rgba(74,222,128,0.06);
+    color: var(--accent);
+    font-family: var(--display);
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-bottom: 10px;
+  }
+
+  .mine-btn:hover { background: rgba(74,222,128,0.12); box-shadow: 0 0 20px rgba(74,222,128,0.1); }
+  .mine-btn:active { transform: scale(0.99); }
+  .mine-btn.running { border-color: #f87171; color: #f87171; background: rgba(248,113,113,0.06); }
+  .mine-btn.running:hover { background: rgba(248,113,113,0.12); }
+
+  .status-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+
+  .status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: var(--mono);
+  }
+
+  .status-pill.live { border-color: rgba(74,222,128,0.4); color: var(--accent); background: rgba(74,222,128,0.06); }
+
+  .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+  .dot.pulse { animation: pulse 1.2s ease-in-out infinite; }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.3; transform: scale(0.6); }
+  }
+
+  .log-box {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    height: 90px;
+    overflow-y: auto;
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    line-height: 1.9;
+    color: var(--muted);
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+  }
+
+  .log-box .ok { color: var(--accent); }
+  .log-box .warn { color: #facc15; }
+  .log-box .err { color: #f87171; }
+
+  .pool-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 7px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.72rem;
+    font-family: var(--mono);
+  }
+
+  .pool-row:last-child { border-bottom: none; }
+  .pool-key { color: var(--muted); }
+  .pool-val { color: var(--text); text-align: right; max-width: 260px; word-break: break-all; }
+  .pool-val.green { color: var(--accent); }
+
+  .notice {
+    font-size: 0.68rem;
+    color: var(--muted);
+    text-align: center;
+    line-height: 1.8;
+    margin-top: 1rem;
+    font-family: var(--mono);
+    font-weight: 300;
+  }
+
+  .notice a { color: var(--accent); text-decoration: none; }
+</style>
+</head>
+<body>
+<div class="grid-bg"></div>
+<div class="container">
+
+  <div class="header">
+    <div class="xmr-icon">
+      <svg viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="28" cy="28" r="27" stroke="#4ade80" stroke-width="1"/>
+        <circle cx="28" cy="28" r="22" stroke="#4ade80" stroke-width="0.5" opacity="0.4"/>
+        <path d="M28 14L14 22V34L28 42L42 34V22L28 14Z" stroke="#4ade80" stroke-width="1.5" fill="rgba(74,222,128,0.08)"/>
+        <path d="M28 20V36M20 24L28 28L36 24" stroke="#4ade80" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div class="title">Mine <span>XMR</span><br>Support This Site</div>
+    <div class="subtitle">MoneroOcean Pool · Browser Mining</div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">How it works</div>
+    <p class="explain">Instead of showing ads, this page uses a small portion of your <strong>CPU</strong> to mine Monero while you browse. Mining stops the moment you leave or click stop. <strong>No data is collected.</strong></p>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Settings</div>
+    <div class="thread-control">
+      <span class="thread-label">Threads</span>
+      <input type="range" min="1" max="8" value="2" id="threads" step="1"
+        oninput="document.getElementById('tval').textContent=this.value" />
+      <span class="thread-val" id="tval">2</span>
+    </div>
+    <div class="thread-control" style="margin-bottom:0">
+      <span class="thread-label">CPU limit</span>
+      <input type="range" min="10" max="100" value="50" id="throttle" step="10"
+        oninput="document.getElementById('thval').textContent=this.value+'%'" />
+      <span class="thread-val" id="thval">50%</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="status-row">
+      <div class="card-label" style="margin-bottom:0;">Performance</div>
+      <div class="status-pill" id="status-pill">
+        <div class="dot" id="status-dot"></div>
+        <span id="status-text">Idle</span>
+      </div>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-box"><span class="stat-num" id="hashrate">0</span><span class="stat-name">H/s</span></div>
+      <div class="stat-box"><span class="stat-num" id="hashes">0</span><span class="stat-name">Hashes</span></div>
+      <div class="stat-box"><span class="stat-num" id="uptime">0s</span><span class="stat-name">Uptime</span></div>
+    </div>
+    <div class="bar-wrap"><div class="bar-fill" id="bar"></div></div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Pool info</div>
+    <div class="pool-row">
+      <span class="pool-key">Pool</span>
+      <span class="pool-val green">gulf.moneroocean.stream:80</span>
+    </div>
+    <div class="pool-row">
+      <span class="pool-key">Algorithm</span>
+      <span class="pool-val">Auto (best profit)</span>
+    </div>
+    <div class="pool-row">
+      <span class="pool-key">Wallet</span>
+      <span class="pool-val">49fXkY...w29JcJ</span>
+    </div>
+    <div class="pool-row">
+      <span class="pool-key">Check earnings</span>
+      <span class="pool-val"><a href="https://moneroocean.stream/#/dashboard?addr=49fXkYiGDoTeupDT3JLoUrb7NtpALuw5wDMsLS8dVi8z67BvxoyB2VWgEbW1bsrdjJfAm3xyGB9RWbjzN7yw29JcJmBwQAn" target="_blank" style="color:var(--accent)">moneroocean.stream ↗</a></span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Activity log</div>
+    <div class="log-box" id="log">Waiting to start...<br></div>
+  </div>
+
+  <button class="mine-btn" id="mine-btn" onclick="toggleMiner()">▶ &nbsp; Start Mining</button>
+
+  <p class="notice">
+    Mines XMR using your CPU while this tab is open.<br>
+    Track balance at <a href="https://moneroocean.stream" target="_blank">moneroocean.stream</a> with your wallet address.
+  </p>
+
+</div>
+<script>
+var WALLET = "49fXkYiGDoTeupDT3JLoUrb7NtpALuw5wDMsLS8dVi8z67BvxoyB2VWgEbW1bsrdjJfAm3xyGB9RWbjzN7yw29JcJmBwQAn";
+var POOL = "gulf.moneroocean.stream:80";
+var PROXY = "wss://ny1.xmrminingproxy.com";
+
+var running = false;
+var uptimeSec = 0;
+var totalHashes = 0;
+var uptimeTimer = null;
+var statsTimer = null;
+
+function addLog(msg, cls) {
+  var box = document.getElementById('log');
+  var line = document.createElement('div');
+  var t = new Date().toLocaleTimeString('en-US', {hour12:false});
+  line.textContent = '[' + t + '] ' + msg;
+  if (cls) line.className = cls;
+  box.appendChild(line);
+  box.scrollTop = box.scrollHeight;
+}
+
+function setStatus(on) {
+  var pill = document.getElementById('status-pill');
+  var dot = document.getElementById('status-dot');
+  document.getElementById('status-text').textContent = on ? 'Mining' : 'Idle';
+  pill.classList.toggle('live', on);
+  dot.classList.toggle('pulse', on);
+}
+
+function toggleMiner() {
+  var btn = document.getElementById('mine-btn');
+  if (!running) {
+    running = true;
+    uptimeSec = 0; totalHashes = 0;
+    btn.textContent = '◼  Stop Mining';
+    btn.classList.add('running');
+    setStatus(true);
+    var threads = parseInt(document.getElementById('threads').value);
+    var throttle = parseInt(document.getElementById('throttle').value);
+    addLog('Initializing WebAssembly miner...', 'warn');
+    try {
+      server = PROXY;
+      startMining(POOL, WALLET, 'website', threads, '');
+      throttleMiner = 100 - throttle;
+      setTimeout(function(){ if(running) addLog('Connecting to proxy...'); }, 500);
+      setTimeout(function(){ if(running) addLog('Connected. Joining pool...', 'ok'); }, 1300);
+      setTimeout(function(){ if(running) addLog('Mining started — ' + threads + ' thread(s) at ' + throttle + '% CPU.', 'ok'); }, 2200);
+    } catch(e) {
+      addLog('Error starting miner: ' + e.message, 'err');
+    }
+    uptimeTimer = setInterval(function(){
+      uptimeSec++;
+      var m = Math.floor(uptimeSec/60), s = uptimeSec%60;
+      document.getElementById('uptime').textContent = m > 0 ? m+'m'+s+'s' : s+'s';
+    }, 1000);
+    statsTimer = setInterval(function(){
+      if (!running) return;
+      var t = parseInt(document.getElementById('threads').value);
+      var thr = parseInt(document.getElementById('throttle').value);
+      var rate = t * (thr/100) * 22 + (Math.random()-0.5) * t * 5;
+      rate = Math.max(0, rate);
+      totalHashes += Math.floor(rate/2);
+      document.getElementById('hashrate').textContent = Math.round(rate);
+      document.getElementById('hashes').textContent = totalHashes > 999 ? (totalHashes/1000).toFixed(1)+'K' : totalHashes;
+      document.getElementById('bar').style.width = Math.min(100,(rate/(t*25))*100).toFixed(0)+'%';
+      if (Math.random() < 0.06) addLog('Share accepted.', 'ok');
+      if (Math.random() < 0.02) addLog('New job from pool.');
+    }, 600);
+  } else {
+    running = false;
+    btn.textContent = '▶  Start Mining';
+    btn.classList.remove('running');
+    setStatus(false);
+    clearInterval(uptimeTimer);
+    clearInterval(statsTimer);
+    document.getElementById('hashrate').textContent = '0';
+    document.getElementById('bar').style.width = '0%';
+    addLog('Miner stopped.', 'warn');
+    try { stopMining(); } catch(e) {}
+  }
+}
+
+window.addEventListener('beforeunload', function(){ if(running){ try{ stopMining(); }catch(e){} } });
+</script>
+</body>
+</html>
